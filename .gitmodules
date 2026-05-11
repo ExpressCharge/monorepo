@@ -11,3 +11,6 @@
 	path = steve
 	url = git@github.com:expresscharge/steve.git
 	branch = expressync-preauth
+[submodule "docs"]
+	path = docs
+	url = git@github.com:expresscharge/docs.git

@@ -3,6 +3,7 @@
         email-worker-dev email-worker-test email-worker-check email-worker-deploy \
         ios-build ios-test ios-format ios-check \
         steve-build steve-up steve-test \
+        docs-dev docs-build docs-check docs-author docs-author-tier docs-drift docs-vocab \
         test check up down compose-build
 
 DENO ?= $(HOME)/.deno/bin/deno
@@ -77,9 +78,32 @@ steve-up: ## Bring up StEvE + MariaDB (needs docker-compose.app.env)
 steve-test: ## Run StEvE unit tests
 	cd steve && ./mvnw test -B -ntp
 
+# --- docs (Starlight site at docs.polaris.express) ------------------
+
+docs-dev: ## Run the docs site in dev (http://localhost:4321)
+	cd docs && npm run dev
+
+docs-build: ## Build the docs site for production
+	cd docs && npm run build
+
+docs-check: ## Lint + typecheck the docs site
+	cd docs && npm run check
+
+docs-author: ## Author one article: make docs-author SLUG=user.web.sessions.start-a-charge
+	cd docs && npm run author -- --slug $(SLUG)
+
+docs-author-tier: ## Author all entries in a tier: make docs-author-tier TIER=P0
+	cd docs && npm run author:tier -- --tier $(TIER) --concurrency $(or $(CONCURRENCY),1)
+
+docs-drift: ## Check articles for code_refs drift
+	cd docs && npm run drift
+
+docs-vocab: ## Refresh the docs cspell vocab from sibling submodules
+	cd docs && npm run vocab
+
 # --- aggregate -------------------------------------------------------
 
-check: web-check email-worker-check ios-check ## All lint / typecheck
+check: web-check email-worker-check ios-check docs-check ## All lint / typecheck
 
 test: web-test email-worker-test ios-test ## All test suites
 

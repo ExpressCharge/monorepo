@@ -1,6 +1,6 @@
 # ExpressCharge — developer monorepo
 
-Aggregator repo combining all four ExpressCharge components as git submodules
+Aggregator repo combining all five ExpressCharge components as git submodules
 for one-clone-gets-everything development. Each submodule is also independently
 useful and has its own CI / release pipeline.
 
@@ -9,7 +9,8 @@ expresscharge/
 ├── web/           ← Deno + Fresh fullstack web app (admin + customer)
 ├── email-worker/  ← Cloudflare Workers transactional email service
 ├── ios/           ← Swift / iOS 26 native app
-└── steve/         ← OCPP backend (fork of steve-community/steve)
+├── steve/         ← OCPP backend (fork of steve-community/steve)
+└── docs/          ← Astro Starlight docs site (docs.polaris.express)
 ```
 
 ## Quickstart
@@ -68,6 +69,7 @@ CI's `bump-submodules` workflow does this automatically on a weekly schedule.
 | Email worker | https://github.com/expresscharge/email-worker |
 | iOS app      | https://github.com/expresscharge/ios          |
 | StEvE (OCPP) | https://github.com/expresscharge/steve        |
+| Docs site    | https://github.com/expresscharge/docs         |
 
 ## License
 
