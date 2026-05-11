@@ -1,0 +1,10 @@
+.DS_Store
+*.swp
+.idea/
+.vscode/
+.claude/
+
+# Local dev overlays (per-developer)
+docker-compose.override.yml
+.env
+.env.local

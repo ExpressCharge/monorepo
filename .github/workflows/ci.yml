@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  submodule-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: detect drift
+        run: |
+          drift=$(git submodule status | grep -E '^[+-]' || true)
+          if [ -n "$drift" ]; then
+            echo "::error::Submodule HEADs differ from .gitmodules pinned commits:"
+            echo "$drift"
+            exit 1
+          fi
+          git submodule status
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: cd web && deno task check
+      - run: cd web && deno task build
+
+  email-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: cd email-worker && npm ci
+      - run: cd email-worker && npx tsc --noEmit
+      - run: cd email-worker && npx wrangler deploy --dry-run
+
+  compose-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: docker compose -f docker-compose.yml build
+
+  secrets-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

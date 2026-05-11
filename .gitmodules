@@ -1,0 +1,9 @@
+[submodule "web"]
+	path = web
+	url = git@github.com:expresscharge/web.git
+[submodule "email-worker"]
+	path = email-worker
+	url = git@github.com:expresscharge/email-worker.git
+[submodule "ios"]
+	path = ios
+	url = git@github.com:expresscharge/ios.git

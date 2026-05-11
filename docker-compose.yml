@@ -1,0 +1,72 @@
+# Integrated dev stack — builds web/ from its submodule's Dockerfile and wires
+# it to a postgres container plus the sync worker. Mirrors the stack defined
+# in web/docker-compose.yml but with build contexts pointed at the submodule
+# so the monorepo controls which web commit is shipped.
+#
+# Email worker is NOT in this compose stack — it's a Cloudflare Worker. For
+# local email-worker development run `cd email-worker && npx wrangler dev`
+# separately and point web's CF_EMAIL_WORKER_URL at the wrangler dev URL.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    env_file: web/.env
+    expose:
+      - 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ocpp_user -d ocpp_billing"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: web/.env
+    command: ["deno", "task", "db:migrate"]
+    restart: "no"
+
+  app:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    env_file: web/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  sync:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    env_file: web/.env
+    command: [
+      "deno",
+      "run",
+      "--allow-net",
+      "--allow-env",
+      "--allow-read",
+      "sync-worker.ts",
+    ]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
