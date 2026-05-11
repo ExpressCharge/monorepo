@@ -30,7 +30,7 @@ jobs:
           fi
       - name: open PR
         if: steps.changes.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: bump-submodules/${{ github.run_id }}
