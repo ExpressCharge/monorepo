@@ -1,6 +1,6 @@
 # ExpressCharge — developer monorepo
 
-Aggregator repo combining all three ExpressCharge components as git submodules
+Aggregator repo combining all four ExpressCharge components as git submodules
 for one-clone-gets-everything development. Each submodule is also independently
 useful and has its own CI / release pipeline.
 
@@ -8,7 +8,8 @@ useful and has its own CI / release pipeline.
 expresscharge/
 ├── web/           ← Deno + Fresh fullstack web app (admin + customer)
 ├── email-worker/  ← Cloudflare Workers transactional email service
-└── ios/           ← Swift / iOS 26 native app
+├── ios/           ← Swift / iOS 26 native app
+└── steve/         ← OCPP backend (fork of steve-community/steve)
 ```
 
 ## Quickstart
@@ -40,9 +41,9 @@ documented in the Makefile.
 
 ## Integrated dev stack
 
-`docker-compose.yml` at the root builds `web/` from its Dockerfile and wires
-it to a postgres container + the sync worker. The email worker runs on
-Cloudflare and is not in the compose stack — for local email development,
+`docker-compose.yml` at the root builds `web/` from its Dockerfile and wires it
+to a postgres container + the sync worker. The email worker runs on Cloudflare
+and is not in the compose stack — for local email development,
 `cd email-worker && npx wrangler dev` (and configure the web app's
 `CF_EMAIL_WORKER_URL` to point at the wrangler dev URL).
 
@@ -61,11 +62,12 @@ CI's `bump-submodules` workflow does this automatically on a weekly schedule.
 
 ## Per-component repos
 
-| Component       | Repository                                           |
-|-----------------|------------------------------------------------------|
-| Web (Fresh)     | https://github.com/expresscharge/web                 |
-| Email worker    | https://github.com/expresscharge/email-worker        |
-| iOS app         | https://github.com/expresscharge/ios                 |
+| Component    | Repository                                    |
+| ------------ | --------------------------------------------- |
+| Web (Fresh)  | https://github.com/expresscharge/web          |
+| Email worker | https://github.com/expresscharge/email-worker |
+| iOS app      | https://github.com/expresscharge/ios          |
+| StEvE (OCPP) | https://github.com/expresscharge/steve        |
 
 ## License
 

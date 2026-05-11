@@ -2,6 +2,7 @@
         web-dev web-build web-test web-check \
         email-worker-dev email-worker-test email-worker-check email-worker-deploy \
         ios-build ios-test ios-format ios-check \
+        steve-build steve-up steve-test \
         test check up down compose-build
 
 DENO ?= $(HOME)/.deno/bin/deno
@@ -64,6 +65,17 @@ ios-format: ## Run swift-format
 ios-check: ## Lint
 	cd ios && xcrun swift-format lint --recursive --strict \
 	  App Sources Tests ExpresScanTests ExpresScanUITests
+
+# --- steve (OCPP backend) -------------------------------------------
+
+steve-build: ## Build the StEvE Docker image
+	cd steve && docker compose build
+
+steve-up: ## Bring up StEvE + MariaDB (needs docker-compose.app.env)
+	cd steve && docker compose up -d
+
+steve-test: ## Run StEvE unit tests
+	cd steve && ./mvnw test -B -ntp
 
 # --- aggregate -------------------------------------------------------
 

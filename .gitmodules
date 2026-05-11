@@ -7,3 +7,7 @@
 [submodule "ios"]
 	path = ios
 	url = git@github.com:expresscharge/ios.git
+[submodule "steve"]
+	path = steve
+	url = git@github.com:expresscharge/steve.git
+	branch = expressync-preauth
